@@ -7,10 +7,10 @@ public class q1 {
 	
 	public static void main(String[]args){
 		// Initialize 2 grids and fill them up at random
-		double [][]gridA = new double[5][5];
-		double [][]gridB = new double[5][5];
+		double [][]gridA = new double[2000][2000];
+		double [][]gridB = new double[2000][2000];
 		// Grid for final solution 
-		double [][]gridC = new double[5][5];
+		double [][]gridC = new double[2000][2000];
 		// Random filling of all elements inside matrix a and ab
 		for (int i = 0; i < gridA.length; i++) {
 		    for (int j = 0; j < gridA[i].length; j++) {
@@ -22,15 +22,21 @@ public class q1 {
 		
 		printMatrix(gridA);
 		System.out.println();
-		printMatrix(gridB);
+		//printMatrix(gridB);
 		// Sequential Matrix Multiplication
-		gridC = sequentialMultiplyMatrix(gridA,gridB);
+		//long beginTime = System.currentTimeMillis();
+		//gridC = sequentialMultiplyMatrix(gridA,gridB);
+		//long endTime = System.currentTimeMillis();
+		//System.out.println("Sequential Multiplication time : " + (endTime-beginTime));
 		System.out.println();
-		printMatrix(gridC);
+		//printMatrix(gridC);
+		long beginTime = System.currentTimeMillis();
 		// Parallel Matrix Multiplication
-		gridC = parallelMultiplyMatrix(gridA,gridB,3);
-		System.out.println();
-		printMatrix(gridC);
+		gridC = parallelMultiplyMatrix(gridA,gridB,1);
+		long endTime = System.currentTimeMillis();
+		System.out.println("Parallel Multiplication time : " + (endTime-beginTime));
+	
+		//printMatrix(gridC);
 	
 		
 	}
