@@ -7,10 +7,10 @@ public class q1 {
 	
 	public static void main(String[]args){
 		// Initialize 2 grids and fill them up at random
-		double [][]gridA = new double[2000][2000];
-		double [][]gridB = new double[2000][2000];
+		double [][]gridA = new double[1000][1000];
+		double [][]gridB = new double[1000][1000];
 		// Grid for final solution 
-		double [][]gridC = new double[2000][2000];
+		double [][]gridC = new double[1000][1000];
 		// Random filling of all elements inside matrix a and ab
 		for (int i = 0; i < gridA.length; i++) {
 		    for (int j = 0; j < gridA[i].length; j++) {
@@ -20,7 +20,7 @@ public class q1 {
 		    }
 		}
 		
-		printMatrix(gridA);
+//		printMatrix(gridA);
 		System.out.println();
 		//printMatrix(gridB);
 		// Sequential Matrix Multiplication
