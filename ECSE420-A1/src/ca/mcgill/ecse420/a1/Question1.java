@@ -1,9 +1,9 @@
-package q1;
+package ca.mcgill.ecse420.a1;
 
 
 import java.util.Random;
 
-public class q1 {
+public class Question1 {
 	
 	public static void main(String[]args){
 		// Initialize 2 grids and fill them up at random

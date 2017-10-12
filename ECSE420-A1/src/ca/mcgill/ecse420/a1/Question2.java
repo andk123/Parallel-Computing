@@ -1,7 +1,7 @@
-package q2;
+package ca.mcgill.ecse420.a1;
 
 // Class for Question 2 where we will demonstrate a deadlock
-public class q2 {
+public class Question2 {
 	
 	// 2 Strings which will represent elements we will be locking on
 	String str1 = "1";
@@ -44,7 +44,7 @@ public class q2 {
     public static void main(String a[]){
     	// Execute both threads
     	// We should hit deadlock once they are both waiting on each other to release lock
-        q2 deadlock = new q2();
+        Question2 deadlock = new Question2();
         deadlock.t1.start();
         deadlock.t2.start();
     }

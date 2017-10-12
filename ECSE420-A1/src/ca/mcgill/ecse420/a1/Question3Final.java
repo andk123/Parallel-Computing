@@ -1,11 +1,31 @@
-package q3;
+package ca.mcgill.ecse420.a1;
 
-public class q3_2 {
+import java.util.Scanner;
+
+public class Question3Final {
 
 	public static void main(String[] args) throws Exception {
 
 		//The number of philosophers N
-		int numberPhilosophers = 5;
+		int numberPhilosophers = 0;
+		
+		//Enter the number of philosophers
+		Scanner reader = new Scanner(System.in);  // Reading from System.in
+		boolean isValid = false;
+		while(!isValid){
+			try{
+			System.out.println("Enter the number of philosophers: ");
+			isValid = true;
+			String input = reader.nextLine(); // Scans the next token of the input
+			numberPhilosophers = Integer.parseInt(input); //Make sure it is an integer
+			}
+			catch (Exception e) {
+				isValid = false;
+				System.out.println("Enter a valid number");
+			}
+		}
+		//once finished
+		reader.close(); 
 
 		//We have the same number of chopsticks than that of philosophers
 		String[] chopSticks = new String[numberPhilosophers];

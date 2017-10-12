@@ -1,6 +1,6 @@
-package q3;
+package ca.mcgill.ecse420.a1;
 
-public class q3_1 {
+public class Question3Deadlock {
 
 	public static void main(String[] args) throws Exception {
 
