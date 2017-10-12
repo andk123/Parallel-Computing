@@ -7,10 +7,11 @@ public class Question1 {
 	
 	public static void main(String[]args){
 		// Initialize 2 grids and fill them up at random
-		double [][]gridA = new double[1000][1000];
-		double [][]gridB = new double[1000][1000];
+		int arraySize = 1000;
+		double [][]gridA = new double[arraySize][arraySize];
+		double [][]gridB = new double[arraySize][arraySize];
 		// Grid for final solution 
-		double [][]gridC = new double[1000][1000];
+		double [][]gridC = new double[arraySize][arraySize];
 		// Random filling of all elements inside matrix a and ab
 		for (int i = 0; i < gridA.length; i++) {
 		    for (int j = 0; j < gridA[i].length; j++) {
