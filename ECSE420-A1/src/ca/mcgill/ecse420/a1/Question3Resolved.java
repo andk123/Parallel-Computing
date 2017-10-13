@@ -27,16 +27,16 @@ public class Question3Resolved {
 
 			//Create the philosopher runnable with the corresponding chopsticks and launch the threads.
 			Philosopher philosopher;
-			
+
 			//Break the possible circular wait. One of the essential condition for a deadlock to ensure that no deadlock occurs.
 			if (i == 0 ) {
 				philosopher = new Philosopher(name, secondChopstick, firstChopstick);
 			}
 			else {
-			//Create the philosopher runnable with the corresponding chopsticks and launch the threads.
-			philosopher = new Philosopher(name, firstChopstick, secondChopstick);
+				//Create the philosopher runnable with the corresponding chopsticks and launch the threads.
+				philosopher = new Philosopher(name, firstChopstick, secondChopstick);
 			}
-			
+
 			Thread philosopherThread = new Thread(philosopher);
 			philosopherThread.start();
 		}

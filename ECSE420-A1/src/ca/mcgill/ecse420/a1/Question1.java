@@ -1,121 +1,122 @@
 package ca.mcgill.ecse420.a1;
 
-
 import java.util.Random;
 
 public class Question1 {
-	
+
 	public static void main(String[]args){
-		// Initialize 2 grids and fill them up at random
 		int arraySize = 1000;
+		int numberThreads = 3;
+		
+		//Initialize 2 grids and fill them up at random
 		double [][]gridA = new double[arraySize][arraySize];
 		double [][]gridB = new double[arraySize][arraySize];
 		// Grid for final solution 
 		double [][]gridC = new double[arraySize][arraySize];
-		// Random filling of all elements inside matrix a and ab
+		// Random filling of all elements inside matrix a and b
 		for (int i = 0; i < gridA.length; i++) {
-		    for (int j = 0; j < gridA[i].length; j++) {
-		    	Random rn = new Random();
-		    	gridA[i][j] = (double)(rn.nextInt(9) + 1);
-		    	gridB[i][j] = (double)(rn.nextInt(9) + 1);
-		    }
+			for (int j = 0; j < gridA[i].length; j++) {
+				Random rn = new Random();
+				gridA[i][j] = (double)(rn.nextInt(9) + 1);
+				gridB[i][j] = (double)(rn.nextInt(9) + 1);
+			}
 		}
-		
-//		printMatrix(gridA);
-		System.out.println();
+
+		//printMatrix(gridA);
 		//printMatrix(gridB);
+
 		// Sequential Matrix Multiplication
+		
 		//long beginTime = System.currentTimeMillis();
 		//gridC = sequentialMultiplyMatrix(gridA,gridB);
 		//long endTime = System.currentTimeMillis();
 		//System.out.println("Sequential Multiplication time : " + (endTime-beginTime));
-		System.out.println();
-		//printMatrix(gridC);
-		long beginTime = System.currentTimeMillis();
+
 		// Parallel Matrix Multiplication
-		gridC = parallelMultiplyMatrix(gridA,gridB,1);
+		
+		long beginTime = System.currentTimeMillis();
+		gridC = parallelMultiplyMatrix(gridA,gridB, numberThreads);
 		long endTime = System.currentTimeMillis();
 		System.out.println("Parallel Multiplication time : " + (endTime-beginTime));
-	
-		//printMatrix(gridC);
-	
-		
 	}
-	
-	
+
+
 	// Helper method to print Matrix
 	static void printMatrix(double[][] grid) {
-	    for(int r=0; r<grid.length; r++) {
-	       for(int c=0; c<grid[r].length; c++)
-	           System.out.print(grid[r][c] + " ");
-	       System.out.println();
-	    }
+		for(int r=0; r<grid.length; r++) {
+			for(int c=0; c<grid[r].length; c++)
+				System.out.print(grid[r][c] + " ");
+			System.out.println();
+		}
 	}
-	
-	
+
+
 	// Sequential Matrix Multiplication method
-	public static double[][] sequentialMultiplyMatrix(double[][] a, double[][] b){
-		double [][] result = new double[a.length][b[0].length];
+	public static double[][] sequentialMultiplyMatrix(double[][] gridA, double[][] gridB){
+		double [][] result = new double[gridA.length][gridB[0].length];
 		// Check if invalid multiplication dimensions
-		if (a[0].length != b.length) throw
+		if (gridA[0].length != gridB.length) throw
 		new RuntimeException("Illegal matrix dimensions.");
 		// Multiply each of the elements sequentially
-		for (int i = 0; i < a.length; i++) { 
-		    for (int j = 0; j < b[0].length; j++) { 
-		        for (int k = 0; k < a[0].length; k++) { 
-		            result[i][j] += a[i][k] * b[k][j];
-		        }
-		    }
+		for (int i = 0; i < gridA.length; i++) { 
+			for (int j = 0; j < gridB[0].length; j++) { 
+				for (int k = 0; k < gridA[0].length; k++) { 
+					result[i][j] += gridA[i][k] * gridB[k][j];
+				}
+			}
 		}
 		return result;
 	}
-	
+
 	// Parallel Matrix Multiplication method with extra thread parameter
-	public static double[][] parallelMultiplyMatrix(double[][] a, double[][] b, int numThreads){
-		if (a[0].length != b.length) throw
-		new RuntimeException("Illegal matrix dimensions.");
+	public static double[][] parallelMultiplyMatrix(double[][] gridA, double[][] gridB, int numThreads){
+		if (gridA[0].length != gridB.length) throw new RuntimeException("Illegal matrix dimensions.");
+
 		Thread threads[] = new Thread[numThreads];
-		double[][]c = new double[a.length][b[0].length];
+		double[][]c = new double[gridA.length][gridB[0].length];
+
 		// Check if thread number is bigger than rows of matrix A
 		int rowsPerThread;
-		if (numThreads>= a.length){
+		if (numThreads>= gridA.length){
 			rowsPerThread = 1;			
 		}else {
 			// If thread number smaller, we can separate row in chunks
-			rowsPerThread = a.length/ numThreads;
+			rowsPerThread = gridA.length/ numThreads;
 		}
 		// Go through each thread and set start row and end row
 		for (int i = 0; i < numThreads; i++) {
 			int sRow,eRow;
-			if(i == numThreads -1 && ((i * rowsPerThread + rowsPerThread) < a.length)){			
+			if(i == numThreads -1 && ((i * rowsPerThread + rowsPerThread) < gridA.length)){			
 				sRow =  i * rowsPerThread;	
-				eRow = a.length;
-		
-			}else{
+				eRow = gridA.length;
+
+			}
+			else{
 				sRow = i * rowsPerThread; 
 				eRow = sRow + rowsPerThread;
-				
+
 			}
-	
+
 			System.out.println("Start Row:  " + sRow + "  End Row: " +eRow);
 			// initialize task, create thread, start thread
 			matrixMultiplier task = new matrixMultiplier
-			(sRow, eRow, a, b, c, a[0].length);
+					(sRow, eRow, gridA, gridB, c, gridA[0].length);
 			threads[i] = new Thread(task);
 			threads[i].start();
 		}
+
 		// wait for all threads to finish
 		for (int i = 0; i < numThreads; i++) {
-		try {
-			threads[i].join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try {
+				threads[i].join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		}
-		
+
 		return c;
-		
+
 	}
 }
 
@@ -124,32 +125,32 @@ public class Question1 {
 class matrixMultiplier extends Thread{
 	int startRow;
 	int endRow;
-	double[][] a,b,c;
-	int dim;
+	double[][] gridA,gridB,gridC;
+	int dimension;
 
 	//Constructor
-matrixMultiplier(int sRow, int eRow, double[][] dA, double[][] dB,double[][] dC, int dim){
-	this.startRow = sRow;
-	this.endRow = eRow;
-	this.a = dA;
-	this.b = dB;
-	this.c = dC;
-	this.dim = dim;
+	matrixMultiplier(int sRow, int eRow, double[][] gridA, double[][] gridB,double[][] gridC, int dimension){
+		this.startRow = sRow;
+		this.endRow = eRow;
+		this.gridA = gridA;
+		this.gridB = gridB;
+		this.gridC = gridC;
+		this.dimension = dimension;
 
 	}
-	
-	
+
+
 	public void run() {
 		// same logic as sequential
 		while (!Thread.currentThread().isInterrupted()){
 			for (int i = startRow; i < endRow; i ++){
-				for (int j = 0; j < dim; j++)
-					for (int k = 0; k < dim; k++)
-					c[i][j] += (a[i][k] * b[k][j]);
-				}
+				for (int j = 0; j < dimension; j++)
+					for (int k = 0; k < dimension; k++)
+						gridC[i][j] += (gridA[i][k] * gridB[k][j]);
+			}
 			Thread.currentThread().interrupt();
-			}			
-		}		
+		}			
+	}		
 
 }
 

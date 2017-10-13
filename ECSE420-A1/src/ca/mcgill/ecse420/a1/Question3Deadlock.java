@@ -74,15 +74,14 @@ class Philosopher implements Runnable {
 
 	//Print the action done by the philosopher
 	private void action(String action) {
-		
+
 		System.out.println(name + " is " + action);
-		
+
 		try {
 			Thread.sleep(((long)(Math.random() * 150)));
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
 	}
-
 
 }

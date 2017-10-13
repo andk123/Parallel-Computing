@@ -8,16 +8,16 @@ public class Question3Final {
 
 		//The number of philosophers N
 		int numberPhilosophers = 0;
-		
+
 		//Enter the number of philosophers
 		Scanner reader = new Scanner(System.in);  // Reading from System.in
 		boolean isValid = false;
 		while(!isValid){
 			try{
-			System.out.println("Enter the number of philosophers: ");
-			isValid = true;
-			String input = reader.nextLine(); // Scans the next token of the input
-			numberPhilosophers = Integer.parseInt(input); //Make sure it is an integer
+				System.out.println("Enter the number of philosophers: ");
+				isValid = true;
+				String input = reader.nextLine(); // Scans the next token of the input
+				numberPhilosophers = Integer.parseInt(input); //Make sure it is an integer
 			}
 			catch (Exception e) {
 				isValid = false;
@@ -47,16 +47,16 @@ public class Question3Final {
 
 			//Create the philosopher runnable with the corresponding chopsticks and launch the threads.
 			Philosopher philosopher;
-			
+
 			//Break the possible circular wait. One of the essential condition for a deadlock to ensure that no deadlock occurs.
 			if (i == 0 ) {
 				philosopher = new Philosopher(name, secondChopstick, firstChopstick);
 			}
 			else {
-			//Create the philosopher runnable with the corresponding chopsticks and launch the threads.
-			philosopher = new Philosopher(name, firstChopstick, secondChopstick);
+				//Create the philosopher runnable with the corresponding chopsticks and launch the threads.
+				philosopher = new Philosopher(name, firstChopstick, secondChopstick);
 			}
-			
+
 			Thread philosopherThread = new Thread(philosopher);
 			philosopherThread.start();
 		}
