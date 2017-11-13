@@ -1,3 +1,4 @@
+package ca.mcgill.ecse420.a2;
 public class ThreadID {
 
 	private static volatile int currentID = 0;
