@@ -1,41 +1,22 @@
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 
-class Node implements Lock
+class Node <T> implements Lock
 {
-	private int data;
-	private int key;
-	private Node next;
+	 T data;
+	 int key;
+	 Node <T> next;
 
-	public Node(int data)
+	public Node(T item)
 	{
-		this.setData(data);
+		this.data = item;
+		this.next = null;
 	}
 
-
-
-	public Node getNext() {
-		return next;
-	}
-
-	public void setNext(Node next) {
-		this.next = next;
-	}
-
-
-
-	public int getData() {
-		return data;
-	}
-
-
-
-	public void setData(int data) {
-		this.data = data;
-	}
 
 
 
@@ -79,48 +60,39 @@ class Node implements Lock
 		return null;
 	}
 
-
-
-	public int getKey() {
-		return key;
-	}
-
-
-
-	public void setKey(int key) {
-		this.key = key;
-	}
 }
 
-public class FineList {
+public class FineList <T>{
 
-	private Node head;
+	private Node <T> head; 
+	private Lock lock = new ReentrantLock();
+	@SuppressWarnings("unchecked")
 	public FineList() {
-		head = new Node(Integer.MIN_VALUE);
-		head.setNext(new Node(Integer.MAX_VALUE));
+		head = new Node (Integer.MIN_VALUE);
+		head.next= new Node(Integer.MAX_VALUE);
 	}
 
-	public boolean add(Node item) {
+	public boolean add(T item) {
 		int key = item.hashCode();
 
 		head.lock(); 
-		Node pred = head;
+		Node <T> pred = head;
 		try {
-			Node curr = pred.getNext();
+			Node <T> curr = pred.next;
 			curr.lock();
 			try {
-				while (curr.getKey() < key) {
+				while (curr.key < key) {
 					pred.unlock();
 					pred = curr;
-					curr = curr.getNext();
+					curr = curr.next;
 					curr.lock();
 				}
-				if (curr.getKey() == key) {
+				if (curr.key == key) {
 					return false;
 				}
-				Node newNode = item;
-				newNode.setNext(curr);
-				pred.setNext(newNode);
+				Node <T> newNode = new Node <T> (item);
+				newNode.next= curr;
+				pred.next= newNode;
 				return true;
 			} finally {
 				curr.unlock();
@@ -130,23 +102,23 @@ public class FineList {
 		}
 	}
 
-	public boolean remove(Node item) {
-		Node pred = null, curr = null;
+	public boolean remove(T item) {
+		Node <T> pred = null, curr = null;
 		int key = item.hashCode();
 		head.lock();
 		try {
 			pred = head;
-			curr = pred.getNext();
+			curr = pred.next;
 			curr.lock();
 			try {
-				while (curr.getKey() < key) {
+				while (curr.key < key) {
 					pred.unlock();
 					pred = curr;
-					curr = curr.getNext();
+					curr = curr.next;
 					curr.lock();
 				}
-				if (curr.getKey() == key) {
-					pred.setNext(curr.getNext());
+				if (curr.key == key) {
+					pred.next=curr.next;
 					return true;
 				}
 				return false;
@@ -158,21 +130,21 @@ public class FineList {
 		}
 	}
 
-	public boolean contains(Node item) {
+	public boolean contains(T item) {
 		int key = item.hashCode();
 		head.lock();
-		Node pred = head;
+		Node <T> pred = head;
 		try {
-			Node curr = pred.getNext();
+			Node <T> curr = pred.next;
 			curr.lock();
 			try {
-				while (curr.getKey() < key) {
+				while (curr.key < key) {
 					pred.unlock();
 					pred = curr;
-					curr = curr.getNext();
+					curr = curr.next;
 					curr.lock();
 				}
-				return curr.getKey() == key;
+				return curr.key == key;
 			} finally { curr.unlock(); }
 		} finally { pred.unlock(); }
 	}
