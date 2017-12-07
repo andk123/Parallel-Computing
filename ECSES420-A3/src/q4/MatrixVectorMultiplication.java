@@ -25,8 +25,8 @@ public class MatrixVectorMultiplication {
 		// Random filling of all elements inside matrix a and b
 		for (int i = 0; i < matrix.length; i++) {
 				Random rn = new Random();
-				//vector[i] = (double)(rn.nextInt(9) + 1);
-				vector[i] = 1;
+				vector[i] = (double)(rn.nextInt(9) + 1);
+				//vector[i] = 1;
 			for (int j = 0; j < matrix[i].length; j++) {
 				rn = new Random();
 				matrix[i][j] = (double)(rn.nextInt(9) + 1);

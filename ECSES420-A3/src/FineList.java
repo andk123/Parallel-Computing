@@ -38,17 +38,22 @@ public class FineList {
 	  public static void main(String[] args) {
 		  // Testing method
 		    FineList testList = new FineList();
-		    //Generate random list
-		    for(int i = 0; i < 20; i++) {
-		      int random= (int) (Math.random() * 100);
-		      testList.add(random);
-		      System.out.print(random + " -> ");
-		    }
-		    System.out.println();
-		    // Check if values from 0-99 are contained, return true if yes false if not
-		    for(int i = 0; i < 100; i++) {
-		      System.out.println("Does my list contain " + i + ": " + testList.contains(i));
-		    }
+		    //Add values to list
+		    System.out.println("Adding 2 to list");
+		    testList.add(2);
+		    System.out.println("Adding 6 to list");
+		    testList.add(6);
+		    System.out.println("Adding 10 to list");
+		    testList.add(10);
+		    System.out.println("Adding 13 to list");
+		    testList.add(13);
+		    
+		    System.out.println("Does my list contain 4 "  + ": " + testList.contains(4));
+		    System.out.println("Does my list contain 6 "  + ": " + testList.contains(6));
+		    System.out.println("Does my list contain 3 "  + ": " + testList.contains(3));
+		    System.out.println("Does my list contain 2 "  + ": " + testList.contains(2));
+		    System.out.println("Does my list contain 13 "  + ": " + testList.contains(13));
+
 		  }
 	
 	

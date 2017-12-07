@@ -16,7 +16,7 @@ public class BoundedLockBasedQueue<T> {
     private Condition notFull  = lockTail.newCondition();
 
 
-    @SuppressWarnings("unchecked")
+
 	public BoundedLockBasedQueue(int capacity) {
         items = (T[]) new Object[capacity];
     }
@@ -25,7 +25,7 @@ public class BoundedLockBasedQueue<T> {
         lockTail.lock();
         try {
             while (tail - head == items.length) {
-                try { notFull.await(); } catch (InterruptedException ie) {}
+                try { notFull.await(); } catch (Exception e) {}
             }
             items[tail % items.length] = item;
 
@@ -42,13 +42,13 @@ public class BoundedLockBasedQueue<T> {
         lockHead.lock();
         try {
             while (tail - head == 0) {
-                try { notEmpty.await(); } catch (InterruptedException ie) {}
+                try { notEmpty.await(); } catch (Exception e) {}
             }
-            T x = items[head % items.length];
+            T tmp = items[head % items.length];
             head++;
             if (tail - head == items.length - 1)
                 notFull.signal();
-            return x;
+            return tmp;
         } finally {
             lockHead.unlock();
         }

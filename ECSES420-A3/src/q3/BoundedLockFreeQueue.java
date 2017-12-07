@@ -10,7 +10,6 @@ public class BoundedLockFreeQueue<T> {
     private AtomicInteger tailCommit = new AtomicInteger(0);
     private AtomicInteger latentCapacity;
 
-    @SuppressWarnings("unchecked")
     public BoundedLockFreeQueue(int capacity) {
         items = (T[]) new Object[capacity];
         latentCapacity = new AtomicInteger(capacity);
