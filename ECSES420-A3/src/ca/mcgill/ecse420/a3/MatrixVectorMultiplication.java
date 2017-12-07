@@ -1,23 +1,14 @@
 package ca.mcgill.ecse420.a3;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class MatrixVectorMultiplication {
-	static ExecutorService executor = Executors.newFixedThreadPool(10);
-	
-
-	public static void main(String[]args) throws InterruptedException, ExecutionException{
-		int arraySize = 2000;
-
-		
+	static int numberThread = 4;
+	static ExecutorService exec = Executors.newFixedThreadPool(numberThread);
+    public static void main (String []args) throws Exception{
+    	
+        int arraySize = 2000;	
+        
 		//Initialize 2 grids and fill them up at random
 		double [][]matrix = new double[arraySize][arraySize];
 		double []vector = new double[arraySize];
@@ -32,10 +23,6 @@ public class MatrixVectorMultiplication {
 				matrix[i][j] = (double)(rn.nextInt(9) + 1);
 			}
 		}
-
-		//printMatrix(matrix);
-		//printVector(vector);
-		
 		
 		System.out.println("TEST Sequential");
 		long beginTime = System.currentTimeMillis();
@@ -44,7 +31,7 @@ public class MatrixVectorMultiplication {
 		long endTime = System.currentTimeMillis();
 		System.out.println("Sequential Multiplication time : " + (endTime-beginTime));
 		
-		
+		System.out.println();
 		System.out.println("TEST Parallel");
 		beginTime = System.currentTimeMillis();
 		parallelMultiplication(matrix,vector);
@@ -53,12 +40,10 @@ public class MatrixVectorMultiplication {
 		System.out.println("Parallel Multiplication time : " + (endTime-beginTime));
 		
 		
-		executor.shutdownNow();
+		exec.shutdownNow();
 
-
-	}
-
-
+    }
+    
 	// Helper method to print Matrix
 	static void printMatrix(double[][] grid) {
 		for(int r=0; r<grid.length; r++) {
@@ -68,7 +53,7 @@ public class MatrixVectorMultiplication {
 		}
 		System.out.println();
 	}
-	
+
 	// Helper method to print vector
 	static void printVector(double[] vector) {
 		for(int c=0; c<vector.length; c++){
@@ -90,102 +75,55 @@ public class MatrixVectorMultiplication {
 		return result;
 	}
 
-	public static double[] parallelMultiplication(double[][] matrix,double[] vector) throws InterruptedException, ExecutionException {
-		int n = vector.length;
-		List<Future<Double>> finalValues = new ArrayList<Future<Double>>();
-		// Loop through Matrix Rows
-		for (int i = 0; i < n; i++) {
-			List<Future<Double>> rowMultiplications= new ArrayList<Future<Double>>();
-			// Loop through column elements
-			for (int j = 0; j < vector.length; j++) {
-				//Parallel Multiplication
-				Future<Double> multiplication = executor.submit(new MultiplicationTask(matrix[i][j],vector[j]));
-			      try {
-			    	  multiplication.get();
 
-			        } catch (Exception e) {
-			            e.printStackTrace();
-			        }
-				rowMultiplications.add(multiplication);
-			}
-			//Recursive-Parallel Add of row values
-			finalValues.add(listSummer(rowMultiplications)); 
-		}
+    public static double [] parallelMultiplication(double[][] matrix,double[] vector) throws Exception{
+        // New result Vector
+    	double [] result = new double [matrix.length];
+    	// Loop through rows and initialize threads to do multiplication jobs
+        for (int i = 0 ; i < matrix.length; i ++){
+            exec.execute(new MultiplyRow(matrix,vector, result, i));
+        }
+        exec.shutdown();
+        return result;
+    }
 
-		return createFinalVector(finalValues);
-
-	}
-
-	//Sums value of the multiplied list items
-	public static Future<Double> listSummer(List<Future<Double>> rowList) {
-		//Base Case
-		if (rowList.size() == 1) { 
-			return rowList.get(0);
-		} else {
-			// Get middle point
-			int middle = rowList.size() / 2;
-			List<Future<Double>> firstHalf = rowList.subList(0, middle);
-			List<Future<Double>> lastHalf = rowList.subList(middle, rowList.size());
-			//Recursive addition call
-			Future<Double> recursiveAddition = executor
-					.submit(new AdditionTask(listSummer(firstHalf), listSummer(lastHalf)));
-		      try {
-		    	  recursiveAddition.get();	    
-
-		        } catch (Exception e) {
-		            e.printStackTrace();
-		        }
-			return recursiveAddition;
-		}
-	}
-
-
-// Method to create final vector from list values
-public static double [] createFinalVector(List<Future<Double>> finalValues) throws InterruptedException, ExecutionException{
-	double[] result = new double[finalValues.size()];
-	for (int i = 0; i < finalValues.size(); i++) {
-		result[i] = finalValues.get(i).get(); // put it in result. Blocking
-	}
-	return result;
-}
-
-}
-
-
-class MultiplicationTask implements Callable<Double>{
-
-	Double matrixValue;
-	Double vectorValue;
-
-
-	public MultiplicationTask(double matrixValue, double vectorValue) {
-		this.matrixValue = matrixValue;
-		this.vectorValue = vectorValue;
-	}
-
-	public Double call() throws Exception {
-		double multiplicationResult = this.matrixValue*this.vectorValue;
-		return multiplicationResult;
-	}
 
 
 }
 
-class AdditionTask implements Callable<Double>{
+class MultiplyRow implements Runnable{
+    private double [][] matrix;
+    private double [] vector, result;
+    private int i;
 
-	Future<Double> toAdd1;
-	Future<Double> toAdd2;
+    public MultiplyRow (double [][] matrix, double [] vector, double [] result, int i){
+        this.matrix = matrix;
+        this.vector = vector;
+        this.result = result;
+        this.i = i;
+    }
+
+    public void run (){
+        result[i] = recursiveAddition(matrix[i],vector,0,vector.length-1);
+    }
+
+    public double recursiveAddition (double[] matrixRow, double vector[], int left, int right){
+        //Base case
+    	if (left == right){
+    		return matrixRow[left]*vector[right];
+    	}else{
+    		// Get halfpoint
+    		int split = (int) Math.floor((left+right)/2);
+    		//Split into 2 recursive calls
+            double leftSum = recursiveAddition(matrixRow,vector,left,split);
+            double rightSum = recursiveAddition(matrixRow,vector,split+1,right);
+            // Sum
+            return leftSum + rightSum; 		
+    		
+    	}
 
 
-	public AdditionTask(Future<Double> future, Future<Double> future2) {
-		this.toAdd1 = future;
-		this.toAdd2 = future2;
-	}
-
-	public Double call() throws Exception {
-		double additionResult = this.toAdd1.get() +this.toAdd2.get();
-		return additionResult;
-	}
-
+    }
 
 }
+
