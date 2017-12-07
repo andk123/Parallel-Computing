@@ -11,11 +11,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class MatrixVectorMultiplication {
-	static ExecutorService executor = Executors.newCachedThreadPool();
+	static ExecutorService executor = Executors.newFixedThreadPool(10);
 	
 
 	public static void main(String[]args) throws InterruptedException, ExecutionException{
-		int arraySize = 100;
+		int arraySize = 2000;
 
 		
 		//Initialize 2 grids and fill them up at random
@@ -33,20 +33,22 @@ public class MatrixVectorMultiplication {
 			}
 		}
 
-		printMatrix(matrix);
-		printVector(vector);
+		//printMatrix(matrix);
+		//printVector(vector);
 		
 		
 		System.out.println("TEST Sequential");
 		long beginTime = System.currentTimeMillis();
-		printVector(sequentialMultiplication(matrix,vector));
+		sequentialMultiplication(matrix,vector);
+		//printVector(sequentialMultiplication(matrix,vector));
 		long endTime = System.currentTimeMillis();
 		System.out.println("Sequential Multiplication time : " + (endTime-beginTime));
 		
 		
 		System.out.println("TEST Parallel");
 		beginTime = System.currentTimeMillis();
-		printVector(parallelMultiplication(matrix,vector));
+		parallelMultiplication(matrix,vector);
+		//printVector(parallelMultiplication(matrix,vector));
 		endTime = System.currentTimeMillis();
 		System.out.println("Parallel Multiplication time : " + (endTime-beginTime));
 		
