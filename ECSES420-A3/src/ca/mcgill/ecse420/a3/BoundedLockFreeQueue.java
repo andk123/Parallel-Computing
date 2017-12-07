@@ -1,4 +1,4 @@
-package q3;
+package ca.mcgill.ecse420.a3;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

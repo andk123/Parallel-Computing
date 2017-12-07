@@ -1,4 +1,4 @@
-package q4;
+package ca.mcgill.ecse420.a3;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,13 +34,23 @@ public class MatrixVectorMultiplication {
 		}
 
 		printMatrix(matrix);
-		System.out.println();
 		printVector(vector);
 		
-		System.out.println("TEST");
+		
+		System.out.println("TEST Sequential");
+		long beginTime = System.currentTimeMillis();
 		printVector(sequentialMultiplication(matrix,vector));
-		System.out.println("TEST");
+		long endTime = System.currentTimeMillis();
+		System.out.println("Sequential Multiplication time : " + (endTime-beginTime));
+		
+		
+		System.out.println("TEST Parallel");
+		beginTime = System.currentTimeMillis();
 		printVector(parallelMultiplication(matrix,vector));
+		endTime = System.currentTimeMillis();
+		System.out.println("Parallel Multiplication time : " + (endTime-beginTime));
+		
+		
 		executor.shutdownNow();
 
 
@@ -54,6 +64,7 @@ public class MatrixVectorMultiplication {
 				System.out.print(grid[r][c] + " ");
 			System.out.println();
 		}
+		System.out.println();
 	}
 	
 	// Helper method to print vector
@@ -61,7 +72,7 @@ public class MatrixVectorMultiplication {
 		for(int c=0; c<vector.length; c++){
 				System.out.print(vector[c] + " ");
 			}
-			
+			System.out.println();
 	}
 
 
