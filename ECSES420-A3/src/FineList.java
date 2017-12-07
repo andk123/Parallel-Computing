@@ -5,80 +5,60 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 
-class Node <T> implements Lock
-{
-	 T data;
-	 int key;
-	 Node <T> next;
+class Node {
+	private Lock lock;
+	int key;
+	Node next;
 
-	public Node(T item)
-	{
-		this.data = item;
-		this.next = null;
+	public Node(int key){
+		this.key = key;
+		next = null;
+		this.lock = new ReentrantLock();
 	}
-
-
-
 
 	public void lock() {
-		// TODO Auto-generated method stub
-
+		lock.lock();
 	}
-
-
-
-	public void lockInterruptibly() throws InterruptedException {
-		// TODO Auto-generated method stub
-
-	}
-
-
-
-	public boolean tryLock() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-
-	public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
 
 	public void unlock() {
-		// TODO Auto-generated method stub
-
-	}
-
-
-
-	public Condition newCondition() {
-		// TODO Auto-generated method stub
-		return null;
+		lock.unlock();
 	}
 
 }
 
-public class FineList <T>{
+public class FineList {
 
-	private Node <T> head; 
-	private Lock lock = new ReentrantLock();
-	@SuppressWarnings("unchecked")
+	private Node head; 
+
 	public FineList() {
-		head = new Node (Integer.MIN_VALUE);
+		this.head = new Node (Integer.MIN_VALUE);
 		head.next= new Node(Integer.MAX_VALUE);
 	}
+	
+	  public static void main(String[] args) {
+		  // Testing method
+		    FineList testList = new FineList();
+		    //Generate random list
+		    for(int i = 0; i < 20; i++) {
+		      int random= (int) (Math.random() * 100);
+		      testList.add(random);
+		      System.out.print(random + " -> ");
+		    }
+		    System.out.println();
+		    // Check if values from 0-99 are contained, return true if yes false if not
+		    for(int i = 0; i < 100; i++) {
+		      System.out.println("Does my list contain " + i + ": " + testList.contains(i));
+		    }
+		  }
+	
+	
+	
 
-	public boolean add(T item) {
-		int key = item.hashCode();
-
+	public boolean add(int key) {
 		head.lock(); 
-		Node <T> pred = head;
+		Node pred = head;
 		try {
-			Node <T> curr = pred.next;
+			Node curr = pred.next;
 			curr.lock();
 			try {
 				while (curr.key < key) {
@@ -90,7 +70,7 @@ public class FineList <T>{
 				if (curr.key == key) {
 					return false;
 				}
-				Node <T> newNode = new Node <T> (item);
+				Node  newNode = new Node (key);
 				newNode.next= curr;
 				pred.next= newNode;
 				return true;
@@ -102,9 +82,8 @@ public class FineList <T>{
 		}
 	}
 
-	public boolean remove(T item) {
-		Node <T> pred = null, curr = null;
-		int key = item.hashCode();
+	public boolean remove(int key) {
+		Node pred = null, curr = null;	
 		head.lock();
 		try {
 			pred = head;
@@ -130,12 +109,12 @@ public class FineList <T>{
 		}
 	}
 
-	public boolean contains(T item) {
-		int key = item.hashCode();
+	public boolean contains(int key) {
+		Node pred = null, curr = null;
 		head.lock();
-		Node <T> pred = head;
 		try {
-			Node <T> curr = pred.next;
+			pred = head;
+			curr = pred.next;
 			curr.lock();
 			try {
 				while (curr.key < key) {
